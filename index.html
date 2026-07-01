@@ -1460,8 +1460,58 @@
             calcSelectAsset(key);
         }
 
-        // Trae el basis actual (futuro - spot) desde la funcion serverless /api/basis.
-        // Solo funciona en la version publicada en Vercel; en el archivo local mostrara un aviso.
+        // ---- Fuentes de datos para el basis (futuro menos spot) ----
+        // Simbolos de Yahoo Finance por activo (spot y futuro) + decimales de salida.
+        const CALC_YH = {
+            gold:   { spot: 'XAUUSD=X', fut: 'GC=F', dec: 1 },
+            euro:   { spot: 'EURUSD=X', fut: '6E=F', dec: 5 },
+            nasdaq: { spot: '^NDX',     fut: 'NQ=F', dec: 1 },
+            us30:   { spot: '^DJI',     fut: 'YM=F', dec: 0 },
+            sp500:  { spot: '^GSPC',    fut: 'ES=F', dec: 1 }
+        };
+        // Proxies CORS publicos para poder leer Yahoo desde el navegador (sin servidor propio).
+        const CALC_PROXIES = [
+            function (u) { return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u); },
+            function (u) { return 'https://corsproxy.io/?url=' + encodeURIComponent(u); },
+            function (u) { return 'https://thingproxy.freeboard.io/fetch/' + u; }
+        ];
+        async function yhPrice(symbol) {
+            const yurl = 'https://query1.finance.yahoo.com/v8/finance/chart/' + encodeURIComponent(symbol) + '?interval=1d&range=1d';
+            let lastErr = null;
+            for (let i = 0; i < CALC_PROXIES.length; i++) {
+                try {
+                    const resp = await fetch(CALC_PROXIES[i](yurl));
+                    if (!resp.ok) { lastErr = new Error('proxy ' + resp.status); continue; }
+                    const j = await resp.json();
+                    const meta = j && j.chart && j.chart.result && j.chart.result[0] && j.chart.result[0].meta;
+                    const pr = meta && (meta.regularMarketPrice || meta.previousClose);
+                    if (typeof pr === 'number') return pr;
+                    lastErr = new Error('sin precio');
+                } catch (e) { lastErr = e; }
+            }
+            throw (lastErr || new Error('sin datos'));
+        }
+        // Devuelve {spot, future, basis} probando primero /api (si existe) y luego los proxies.
+        async function calcFetchBasis(key) {
+            try {
+                const r = await fetch('/api/basis?asset=' + encodeURIComponent(key));
+                if (r.ok) {
+                    const d = await r.json();
+                    if (d && !d.error && typeof d.basis !== 'undefined') { d.via = 'api'; return d; }
+                }
+            } catch (e) { /* seguimos con los proxies */ }
+            const m = CALC_YH[key];
+            if (!m) throw new Error('activo sin fuente automatica');
+            const spot = await yhPrice(m.spot);
+            const fut = await yhPrice(m.fut);
+            return {
+                spot: Number(spot.toFixed(m.dec + 1)),
+                future: Number(fut.toFixed(m.dec + 1)),
+                basis: Number((fut - spot).toFixed(m.dec + 1)),
+                via: 'web'
+            };
+        }
+        // Trae el basis actual y lo aplica. Funciona en Vercel y tambien abriendo el archivo local.
         async function calcUpdateBasis() {
             const a = calcAsset();
             const st = document.getElementById('calc-basis-status');
@@ -1473,12 +1523,9 @@
             }
             btn.disabled = true;
             st.style.color = '#94a3b8';
-            st.textContent = 'Consultando precios...';
+            st.textContent = 'Consultando precios en linea...';
             try {
-                const r = await fetch('/api/basis?asset=' + encodeURIComponent(a.key));
-                if (!r.ok) throw new Error('HTTP ' + r.status);
-                const d = await r.json();
-                if (d.error) throw new Error(d.error);
+                const d = await calcFetchBasis(a.key);
                 const bi = document.getElementById('calc-basis');
                 bi.value = d.basis;
                 calcSaveBasis();
@@ -1488,7 +1535,7 @@
                 st.textContent = 'Basis actualizado: ' + Number(d.basis).toFixed(a.futDec + 1) + '  (fut ' + d.future + ' menos spot ' + d.spot + ', ~15 min de retraso)';
             } catch (e) {
                 st.style.color = '#f87171';
-                st.textContent = 'No se pudo actualizar (' + e.message + '). Esto solo funciona en la version publicada en Vercel.';
+                st.textContent = 'No se pudo actualizar (' + e.message + '). Reintenta en unos segundos.';
             } finally {
                 btn.disabled = false;
             }
