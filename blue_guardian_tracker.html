@@ -1,0 +1,1611 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Phidias E2L · Trading Tracker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;450;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+        :root {
+            --bg: #F8F9FC;
+            --surface: #FFFFFF;
+            --surface-hover: #F1F3F9;
+            --border: #E2E5ED;
+            --border-hover: #C8CDD9;
+            --text: #0F1118;
+            --text-secondary: #4B5066;
+            --text-muted: #8C92A8;
+            --green: #16A34A;
+            --green-bg: #F0FDF4;
+            --green-border: #BBF7D0;
+            --red: #DC2626;
+            --red-bg: #FEF2F2;
+            --red-border: #FECACA;
+            --blue: #2563EB;
+            --blue-bg: #EFF6FF;
+            --blue-border: #BFDBFE;
+            --cal-green: rgba(22,163,74,0.10);
+            --cal-red: rgba(220,38,38,0.07);
+            --cal-other: #F1F3F9;
+            --radius: 14px;
+            --radius-sm: 10px;
+            --shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02);
+            --shadow-hover: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .dark {
+            --bg: #0A0A0F;
+            --surface: #12121A;
+            --surface-hover: #1A1A26;
+            --border: rgba(255,255,255,0.06);
+            --border-hover: rgba(255,255,255,0.1);
+            --text: #F1F5F9;
+            --text-secondary: #94A3B8;
+            --text-muted: #64748B;
+            --green: #22C55E;
+            --green-bg: rgba(34,197,94,0.08);
+            --green-border: rgba(34,197,94,0.2);
+            --red: #EF4444;
+            --red-bg: rgba(239,68,68,0.08);
+            --red-border: rgba(239,68,68,0.2);
+            --blue: #3B82F6;
+            --blue-bg: rgba(59,130,246,0.08);
+            --blue-border: rgba(59,130,246,0.15);
+            --cal-green: rgba(34,197,94,0.15);
+            --cal-red: rgba(239,68,68,0.13);
+            --cal-other: rgba(255,255,255,0.015);
+            --shadow: 0 1px 3px rgba(0,0,0,0.2);
+            --shadow-hover: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+
+        body {
+            font-family: 'Poppins', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            padding: 24px;
+            max-width: 1100px;
+            margin: 0 auto;
+            min-height: 100vh;
+            line-height: 1.6;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 28px; padding-top: 4px; gap: 12px; flex-wrap: wrap;
+        }
+
+        .header-l { display: flex; align-items: center; gap: 12px; }
+
+        .logo {
+            width: 38px; height: 38px; border-radius: 10px;
+            background: var(--blue);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 15px; color: white;
+            transition: background 0.3s ease;
+        }
+
+        .header-titles h1 { font-size: 18px; font-weight: 600; letter-spacing: -0.3px; }
+        .header-titles h1 span { color: var(--blue); }
+        .header-titles p { font-size: 11px; color: var(--text-muted); }
+
+        .header-r { display: flex; align-items: center; gap: 8px; }
+
+        .acct-switch { display: inline-flex; align-items: center; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 3px; gap: 2px; box-shadow: var(--shadow); flex-wrap: wrap; }
+        .acct-opt { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border: none; background: transparent; color: var(--text-secondary); font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 500; border-radius: 7px; cursor: pointer; transition: all 0.2s ease; white-space: nowrap; }
+        .acct-opt:hover { color: var(--text); }
+        .acct-opt.active { background: var(--blue); color: #fff; }
+        .acct-x { font-size: 14px; line-height: 1; opacity: 0.55; border-radius: 4px; padding: 0 3px; }
+        .acct-x:hover { opacity: 1; background: rgba(125,125,125,0.25); }
+        .acct-add { width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text-secondary); cursor: pointer; font-size: 18px; line-height: 1; font-family: 'Poppins', sans-serif; box-shadow: var(--shadow); }
+        .acct-add:hover { background: var(--surface-hover); border-color: var(--border-hover); color: var(--text); }
+
+        .theme-btn {
+            width: 36px; height: 36px; border-radius: 10px;
+            border: 1px solid var(--border); background: var(--surface);
+            color: var(--text-secondary); cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .theme-btn:hover { background: var(--surface-hover); border-color: var(--border-hover); }
+        .theme-btn svg { width: 18px; height: 18px; }
+        .theme-btn .sun { display: none; }
+        .dark .theme-btn .moon { display: none; }
+        .dark .theme-btn .sun { display: block; }
+        .dark .theme-btn { color: #FBBF24; }
+
+        .dashboard { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 28px; }
+        .metric { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); opacity: 0; }
+        .metric:hover { box-shadow: var(--shadow-hover); }
+        .metric.full { grid-column: span 3; }
+        .metric-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-muted); margin-bottom: 6px; font-weight: 500; }
+        .metric-val { font-size: 24px; font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: -0.3px; }
+        .metric-sub { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+        .green { color: var(--green); }
+        .red { color: var(--red); }
+
+        .bar-wrap { width: 100%; background: var(--border); height: 4px; border-radius: 2px; margin-top: 10px; overflow: hidden; }
+        .bar { height: 100%; width: 0%; background: var(--blue); border-radius: 2px; transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
+
+        /* ===== CALENDAR — TopStep Style ===== */
+        .cal-wrap { background: var(--surface); border-radius: var(--radius); padding: 18px 16px; margin-bottom: 24px; box-shadow: var(--shadow); opacity: 0; }
+        .cal-wrap:hover { box-shadow: var(--shadow-hover); }
+
+        .cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+        .cal-nav { display: flex; align-items: center; gap: 8px; }
+        .cal-title { font-size: 16px; font-weight: 600; letter-spacing: -0.2px; min-width: 94px; text-align: center; }
+        .nav-btn {
+            width: 32px; height: 32px; border-radius: 9px;
+            border: 1px solid var(--border); background: var(--surface);
+            color: var(--text-secondary); cursor: pointer;
+            font-size: 17px; line-height: 1;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s ease; font-family: 'Poppins', sans-serif;
+        }
+        .nav-btn:hover { background: var(--surface-hover); border-color: var(--border-hover); color: var(--text); }
+        .nav-btn:active { transform: scale(0.94); }
+        .today-btn {
+            padding: 7px 15px; border-radius: 9px;
+            border: 1px solid var(--border); background: var(--surface);
+            color: var(--text); font-family: 'Poppins', sans-serif;
+            font-size: 12px; font-weight: 500; cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .today-btn:hover { background: var(--surface-hover); border-color: var(--border-hover); }
+        .today-btn:active { transform: scale(0.96); }
+
+        .weekdays { display: grid; grid-template-columns: repeat(7, 1fr); margin-bottom: 8px; }
+        .weekdays span { text-align: center; font-size: 11px; font-weight: 500; color: var(--text-muted); padding: 2px 0; }
+
+        .cal-grid {
+            display: grid; grid-template-columns: repeat(7, 1fr);
+            gap: 1px; background: var(--border);
+            border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
+        }
+
+        .day-cell {
+            background: var(--surface);
+            display: flex; flex-direction: column; align-items: center;
+            min-height: 88px; padding: 8px 4px 6px;
+            position: relative; user-select: none; -webkit-user-select: none;
+            cursor: default; transition: background 0.15s ease;
+        }
+        .day-cell.clickable { cursor: pointer; }
+        .day-cell.clickable:hover { background: var(--surface-hover); }
+        .day-cell.g-bg { background: var(--cal-green); }
+        .day-cell.r-bg { background: var(--cal-red); }
+        .day-cell.other { background: var(--cal-other); }
+
+        .day-num {
+            font-size: 13px; font-weight: 500; color: var(--text-secondary);
+            line-height: 1; font-variant-numeric: tabular-nums;
+            width: 26px; height: 26px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 50%;
+        }
+        .day-cell.other .day-num { color: var(--text-muted); opacity: 0.4; }
+        .day-cell.today .day-num { background: var(--blue); color: #fff; font-weight: 600; }
+
+        .day-body { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; width: 100%; }
+        .day-money {
+            font-size: 14px; font-weight: 600; letter-spacing: -0.3px;
+            font-variant-numeric: tabular-nums; line-height: 1.1; text-align: center;
+        }
+        .day-money.g { color: var(--green); }
+        .day-money.r { color: var(--red); }
+
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            position: fixed; inset: 0; z-index: 100;
+            background: rgba(0,0,0,0.4);
+            display: none;
+            align-items: center; justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+        .modal-overlay.active .modal { animation: modalSlideUp 0.25s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+        @keyframes modalSlideUp {
+            from { transform: translateY(16px) scale(0.96); opacity: 0; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
+        }
+
+        .modal {
+            background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+            padding: 24px; width: 100%; max-width: 400px; box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+        }
+
+        .modal-h { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+        .modal-h h3 { font-size: 16px; font-weight: 600; }
+        .modal-h .modal-date { font-size: 12px; color: var(--text-muted); font-weight: 400; }
+
+        .modal-close {
+            width: 28px; height: 28px; border-radius: 8px; border: 1px solid var(--border);
+            background: transparent; color: var(--text-muted); cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .modal-close:hover { background: var(--surface-hover); color: var(--text); }
+        .modal-close svg { width: 14px; height: 14px; }
+
+        .modal-target { font-size: 12px; color: var(--text-muted); background: var(--bg); border: 1px solid var(--border); padding: 8px 12px; border-radius: var(--radius-sm); margin-bottom: 16px; }
+        .modal-target strong { color: var(--text); }
+        .modal-field { margin-bottom: 16px; }
+        .modal-field label { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-muted); margin-bottom: 6px; font-weight: 500; }
+
+        .input-wrap { position: relative; display: flex; align-items: center; }
+        .input-wrap .currency { position: absolute; left: 12px; font-size: 14px; font-weight: 500; color: var(--text-muted); pointer-events: none; z-index: 1; }
+
+        .modal-input {
+            width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm);
+            padding: 11px 12px 11px 28px; color: var(--text); font-size: 15px; font-weight: 500;
+            outline: none; font-variant-numeric: tabular-nums; font-family: 'Poppins', sans-serif;
+        }
+        .modal-input:focus { border-color: var(--blue); }
+        .modal-input::placeholder { color: var(--border); }
+
+        .modal-toggles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
+        .toggle-item { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: var(--radius-sm); background: var(--bg); border: 1px solid var(--border); cursor: pointer; }
+        .toggle-item:hover { border-color: var(--border-hover); }
+        .toggle-item.on { border-color: var(--blue-border); background: var(--blue-bg); }
+        .toggle-track { position: relative; flex-shrink: 0; width: 34px; height: 18px; }
+        .toggle-track input { opacity: 0; width: 0; height: 0; position: absolute; }
+        .toggle-slider { position: absolute; cursor: pointer; inset: 0; background: var(--border); border-radius: 18px; transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1); }
+        .toggle-slider::before { content: ''; position: absolute; left: 2px; top: 2px; width: 12px; height: 12px; border-radius: 50%; background: white; transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1); box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        .toggle-track input:checked + .toggle-slider { background: var(--blue); }
+        .toggle-track input:checked + .toggle-slider::before { transform: translateX(16px); }
+        .toggle-label { font-size: 11px; color: var(--text-muted); user-select: none; font-weight: 450; }
+        .toggle-item.on .toggle-label { color: var(--text); }
+
+        .modal-save-btn {
+            width: 100%; background: var(--blue); color: white; border: none;
+            padding: 12px; border-radius: var(--radius-sm); font-family: 'Poppins', sans-serif;
+            font-size: 14px; font-weight: 600; cursor: pointer; box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+            transition: background 0.2s, transform 0.1s;
+        }
+        .modal-save-btn:hover { filter: brightness(0.92); }
+        .modal-save-btn:active { transform: scale(0.98); }
+
+        .btn-reset { position: relative; cursor: pointer; z-index: 0; display: inline-flex; align-items: center; gap: 6px; overflow: hidden; border-radius: 8px; border: 1px solid var(--red-border); background: var(--red-bg); padding: 6px 12px; font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 500; color: var(--red); transition: all 0.4s ease; }
+        .btn-reset::before { content: ''; position: absolute; inset: 0; z-index: -1; transform: translateX(150%) translateY(150%) scale(2.5); border-radius: 100%; background: var(--red); transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1); }
+        .btn-reset:hover { color: white; border-color: var(--red); }
+        .btn-reset:hover::before { transform: translateX(0%) translateY(0%); }
+        .btn-reset:active { transform: scale(0.93); }
+        .btn-reset svg { width: 13px; height: 13px; }
+
+        .footer { margin-top: 32px; text-align: center; font-size: 10px; color: var(--border); letter-spacing: 0.5px; }
+
+        @media (max-width: 820px) {
+            body { max-width: 100%; padding: 20px; }
+            .day-cell { min-height: 76px; padding: 7px 3px 5px; }
+            .day-money { font-size: 13px; }
+            .cal-wrap { padding: 16px 12px; }
+        }
+
+        @media (max-width: 640px) {
+            body { padding: 16px; }
+            .dashboard { grid-template-columns: repeat(2, 1fr); }
+            .metric.full { grid-column: span 2; }
+            .metric-val { font-size: 20px; }
+            .day-cell { min-height: 62px; padding: 6px 2px 5px; }
+            .day-num { font-size: 12px; width: 24px; height: 24px; }
+            .day-money { font-size: 11px; }
+            .weekdays span { font-size: 10px; }
+            .cal-wrap { padding: 14px 10px; }
+            .cal-header { margin-bottom: 12px; }
+            .cal-title { font-size: 15px; min-width: 84px; }
+            header { flex-wrap: wrap; gap: 10px; }
+            .header-r { width: 100%; justify-content: space-between; }
+            .acct-opt { padding: 6px 10px; font-size: 11px; }
+            .modal { padding: 18px; }
+        }
+
+        @media (max-width: 420px) {
+            .day-cell { min-height: 54px; }
+            .day-num { font-size: 11px; width: 22px; height: 22px; }
+            .day-money { font-size: 10px; }
+            .nav-btn { width: 30px; height: 30px; }
+            .today-btn { padding: 6px 12px; }
+        }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .metric { animation: slideUp 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+        .metric:nth-child(1) { animation-delay: 0.02s; }
+        .metric:nth-child(2) { animation-delay: 0.05s; }
+        .metric:nth-child(3) { animation-delay: 0.08s; }
+        .cal-wrap { animation: slideUp 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards; }
+        .sync-input { width:100%; box-sizing:border-box; padding:10px 12px; margin:4px 0 8px; border-radius:8px; border:1px solid rgba(128,128,128,0.35); background:rgba(128,128,128,0.08); color:inherit; font-size:13px; font-family:inherit; }
+        .sync-label { display:block; font-size:12px; opacity:0.7; margin-top:8px; }
+        .sync-help { font-size:13px; opacity:0.85; line-height:1.5; margin:4px 0 10px; }
+        .sync-status-row { display:flex; align-items:center; gap:8px; margin:14px 0; font-size:13px; }
+        .sync-dot { width:9px; height:9px; border-radius:50%; background:#888; display:inline-block; flex:0 0 auto; }
+        .sync-dot.ok { background:#16a34a; }
+        .sync-dot.connecting { background:#f59e0b; }
+        .sync-dot.error { background:#dc2626; }
+        .sync-dot.off { background:#888; }
+        .sync-btns { display:flex; gap:10px; margin-top:6px; }
+        .sync-connect-btn, .sync-disconnect-btn { flex:1; padding:10px; border-radius:8px; border:none; cursor:pointer; font-weight:600; font-size:13px; font-family:inherit; }
+        .sync-connect-btn { background:#2563eb; color:#fff; }
+        .sync-disconnect-btn { background:transparent; border:1px solid rgba(128,128,128,0.4); color:inherit; }
+        .theme-btn .sync-dot { position:absolute; top:3px; right:3px; box-shadow:0 0 0 2px rgba(0,0,0,0.15); }
+        .sync-code-box { display:flex; flex-direction:row; align-items:center; gap:8px; margin:6px 0 12px; }
+        .sync-code-field { flex:1; letter-spacing:4px; font-weight:700; }
+        .sync-gen-btn { padding:10px 14px; border-radius:8px; border:1px solid rgba(128,128,128,0.4); background:transparent; color:inherit; cursor:pointer; font-size:13px; font-weight:600; font-family:inherit; white-space:nowrap; }
+        .session-btn { display:inline-flex; align-items:center; gap:7px; padding:7px 12px; border-radius:9px; border:1px solid var(--border); background:var(--surface); color:inherit; cursor:pointer; font-size:13px; font-weight:600; font-family:'Poppins',sans-serif; box-shadow:var(--shadow); }
+        .session-btn:hover { background:var(--surface-hover); border-color:var(--border-hover); }
+        .session-dot { width:8px; height:8px; border-radius:50%; background:#9ca3af; flex:none; }
+        .session-dot.ok { background:#22c55e; }
+        .session-dot.connecting { background:#f59e0b; }
+        .session-dot.error { background:#ef4444; }
+        .session-dot.off { background:#9ca3af; }
+    </style>
+    <!-- Tailwind (Play CDN) solo para la calculadora; preflight desactivado para no afectar el tracker -->
+    <script src='https://cdn.tailwindcss.com'></script>
+    <script>tailwind.config = { corePlugins: { preflight: false } };</script>
+    <style>
+        #view-calc input[type=number]::-webkit-outer-spin-button,
+        #view-calc input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        #view-calc input[type=number] { -moz-appearance: textfield; }
+        .calc-input { width:100%; background:#0d0d12; border:1px solid rgba(255,255,255,0.10); color:#F1F5F9; border-radius:12px; padding:12px 14px; font-size:16px; font-family:'Poppins',sans-serif; outline:none; transition:border-color .15s, box-shadow .15s; }
+        .calc-input:focus { border-color:#22c55e; box-shadow:0 0 0 3px rgba(34,197,94,0.15); }
+        .calc-input::placeholder { color:#5b6172; }
+        .nav-seg { border:none; background:transparent; color:var(--text-secondary); font-family:'Poppins',sans-serif; font-size:13px; font-weight:600; padding:8px 16px; border-radius:9px; cursor:pointer; }
+        .nav-seg.active { background:var(--blue); color:#fff; }
+        .calc-seg { cursor:pointer; border:none; background:transparent; font-family:'Poppins',sans-serif; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-l">
+            <div class="logo" id="firm-logo">PH</div>
+            <div class="header-titles">
+                <h1 id="firm-title">PHIDIAS <span>E2L</span></h1>
+                <p id="firm-sub">Express to Live · $25,000 Evaluación</p>
+            </div>
+        </div>
+        <div class="header-r">
+            <div class="acct-switch" id="acct-switch"></div>
+            <button class="acct-add" onclick="addAccount()" title="Nueva cuenta">+</button>
+            <button class="session-btn" id="session-btn" onclick="openSync()">
+                <span class="session-dot off" id="session-dot"></span>
+                <span id="session-label">Iniciar sesión</span>
+            </button>
+            <button class="theme-btn" onclick="toggleTheme()" aria-label="Toggle theme">
+                <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+            </button>
+        </div>
+    </header>
+
+    <div style='display:flex; justify-content:center; margin-bottom:20px;'>
+        <div style='display:inline-flex; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:4px; gap:4px; box-shadow:var(--shadow);'>
+            <button id='nav-calendar' class='nav-seg active'>Calendario</button>
+            <button id='nav-calc' class='nav-seg'>Calculadora</button>
+        </div>
+    </div>
+
+    <div id='view-calendar'>
+
+    <div class="dashboard">
+        <div class="metric full">
+            <div class="metric-label">Total Profit</div>
+            <div class="metric-val" id="stat-profit">$0.00</div>
+            <div class="bar-wrap"><div class="bar" id="stat-progress"></div></div>
+            <div class="metric-sub" id="stat-balance">Balance: $5,000.00 · Target: $250</div>
+        </div>
+        <div class="metric">
+            <div class="metric-label" id="lbl-consistency">Balance Actual</div>
+            <div class="metric-val" id="stat-consistency">0.00%</div>
+            <div class="metric-sub" id="stat-consistency-lbl">Limit: 15%</div>
+        </div>
+        <div class="metric">
+            <div class="metric-label">Días Operados</div>
+            <div class="metric-val" id="stat-days">0 / 5</div>
+            <div class="metric-sub" id="stat-days-sub">Minimum required</div>
+        </div>
+        <div class="metric">
+            <div class="metric-label" id="lbl-dll">Límite de Contratos</div>
+            <div class="metric-val red" id="stat-dll">-$200.00</div>
+            <div class="metric-sub" id="stat-dll-sub">4% · se reinicia cada día</div>
+        </div>
+        <div class="metric full">
+            <div class="metric-label" id="stat-dd-title">Trailing Drawdown</div>
+            <div class="metric-val" id="stat-dd">$4,600.00</div>
+            <div class="bar-wrap"><div class="bar" id="stat-dd-bar"></div></div>
+            <div class="metric-sub" id="stat-dd-sub">El floor sigue tu balance más alto</div>
+        </div>
+        <div class="metric full" onclick="setCushion()" style="cursor:pointer;">
+            <div class="metric-label">Excedente Retirable</div>
+            <div class="metric-val" id="stat-surplus">$0.00</div>
+            <div class="metric-sub" id="stat-surplus-sub">Toca para fijar tu colchón mínimo y ver cuánto puedes retirar</div>
+        </div>
+    </div>
+
+    <div class="cal-wrap">
+        <div class="cal-header">
+            <div class="cal-nav">
+                <button class="nav-btn" onclick="changeMonth(-1)" aria-label="Previous month">‹</button>
+                <span class="cal-title" id="cal-month-title">Jun 2026</span>
+                <button class="nav-btn" onclick="changeMonth(1)" aria-label="Next month">›</button>
+            </div>
+            <button class="today-btn" onclick="goToday()">Today</button>
+        </div>
+        <div class="weekdays">
+            <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
+        </div>
+        <div class="cal-grid" id="calendar-grid"></div>
+    </div>
+    </div><!-- /view-calendar -->
+
+    <div id='view-calc' style='display:none;'>
+      <div style='background:#0a0a0f; border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:18px 16px;'>
+        <div class='max-w-3xl mx-auto'>
+          <div class='mb-5'>
+            <h2 class='text-xl font-semibold tracking-tight text-slate-100'>Calculadora de Equivalencias</h2>
+            <p class='text-xs text-slate-400 mt-1'>Spot/CFD ↔ Futuros (Micro Contratos) · Redondeo automático de tick CME</p>
+          </div>
+
+          <div class='rounded-2xl border border-white/10 bg-[#12121a] p-4 sm:p-5 shadow-lg mb-4'>
+            <div class='grid sm:grid-cols-2 gap-4'>
+              <div>
+                <label class='block text-[11px] uppercase tracking-wider text-slate-400 mb-1.5'>Activo</label>
+                <select id='calc-asset' class='calc-input'></select>
+              </div>
+              <div class='flex items-end'>
+                <button id='calc-add' class='w-full rounded-xl border border-emerald-500/40 bg-emerald-500/10 text-emerald-300 text-sm font-semibold py-3 hover:bg-emerald-500/20 transition'>+ Activo personalizado</button>
+              </div>
+            </div>
+            <div id='calc-map' class='mt-3 text-xs text-slate-400'></div>
+            <div class='mt-4'>
+              <label class='block text-[11px] uppercase tracking-wider text-slate-400 mb-1.5'>Modo de conversión</label>
+              <div class='inline-flex w-full sm:w-auto rounded-xl border border-white/10 bg-[#0d0d12] p-1'>
+                <button id='calc-mode-a' class='calc-seg flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-semibold text-slate-300'>Spot → Futuros</button>
+                <button id='calc-mode-b' class='calc-seg flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-semibold text-slate-300'>Futuros → Spot</button>
+              </div>
+            </div>
+            <div class='mt-4'>
+              <label class='block text-[11px] uppercase tracking-wider text-slate-400 mb-1.5'>Diferencial de Puntos/Pips (Premium Forward)</label>
+              <div class='flex gap-2'>
+                <input id='calc-basis' type='number' step='any' class='calc-input' style='flex:1'>
+                <button id='calc-basis-update' class='shrink-0 rounded-xl border border-sky-500/40 bg-sky-500/10 text-sky-300 text-sm font-semibold px-4 hover:bg-sky-500/20 transition' title='Traer el basis actual desde internet'>&#8635; Actualizar</button>
+              </div>
+              <p id='calc-basis-hint' class='text-[11px] text-slate-500 mt-1'></p>
+              <p id='calc-basis-status' class='text-[11px] mt-1'></p>
+            </div>
+          </div>
+
+          <div class='rounded-2xl border border-white/10 bg-[#12121a] p-4 sm:p-5 shadow-lg mb-4'>
+            <div class='flex items-center justify-between mb-3'>
+              <h3 class='text-sm font-semibold text-slate-200'>Precios de entrada</h3>
+              <span id='calc-in-badge' class='text-[11px] font-semibold px-2 py-1 rounded-md bg-white/5 text-slate-300'></span>
+            </div>
+            <div class='grid sm:grid-cols-3 gap-3'>
+              <div>
+                <label class='block text-[11px] uppercase tracking-wider text-slate-400 mb-1.5'>Entrada</label>
+                <input id='calc-entry' type='number' step='any' class='calc-input' placeholder='0.00'>
+              </div>
+              <div>
+                <label class='block text-[11px] uppercase tracking-wider text-slate-400 mb-1.5'>Stop Loss</label>
+                <input id='calc-sl' type='number' step='any' class='calc-input' placeholder='0.00'>
+              </div>
+              <div>
+                <label class='block text-[11px] uppercase tracking-wider text-slate-400 mb-1.5'>Take Profit</label>
+                <input id='calc-tp' type='number' step='any' class='calc-input' placeholder='0.00'>
+              </div>
+            </div>
+            <div class='mt-3'>
+              <label class='block text-[11px] uppercase tracking-wider text-slate-400 mb-1.5'>Número de micro-contratos</label>
+              <input id='calc-contracts' type='number' step='1' min='1' class='calc-input' value='1'>
+              <p id='calc-tickinfo' class='text-[11px] text-slate-500 mt-1'></p>
+            </div>
+          </div>
+
+          <div class='rounded-2xl border border-white/10 bg-[#12121a] p-4 sm:p-5 shadow-lg'>
+            <div class='flex items-center justify-between mb-3'>
+              <h3 class='text-sm font-semibold text-slate-200'>Resultados equivalentes</h3>
+              <span id='calc-out-badge' class='text-[11px] font-semibold px-2 py-1 rounded-md bg-emerald-500/10 text-emerald-300'></span>
+            </div>
+            <div class='grid grid-cols-1 sm:grid-cols-3 gap-3'>
+              <div class='rounded-xl border border-white/10 bg-[#0d0d12] p-3'>
+                <div class='text-[10px] uppercase tracking-wider text-slate-400'>Entrada equivalente</div>
+                <div id='out-entry' class='text-2xl font-bold text-slate-100 mt-1 tabular-nums'>—</div>
+              </div>
+              <div class='rounded-xl border border-rose-500/20 bg-rose-500/5 p-3'>
+                <div class='text-[10px] uppercase tracking-wider text-rose-300'>Stop Loss equivalente</div>
+                <div id='out-sl' class='text-2xl font-bold text-rose-400 mt-1 tabular-nums'>—</div>
+                <div id='out-distsl' class='text-[11px] text-slate-400 mt-1'></div>
+                <div id='out-usdsl' class='text-base font-bold text-rose-400 mt-2'></div>
+              </div>
+              <div class='rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-3'>
+                <div class='text-[10px] uppercase tracking-wider text-emerald-300'>Take Profit equivalente</div>
+                <div id='out-tp' class='text-2xl font-bold text-emerald-400 mt-1 tabular-nums'>—</div>
+                <div id='out-disttp' class='text-[11px] text-slate-400 mt-1'></div>
+                <div id='out-usdtp' class='text-base font-bold text-emerald-400 mt-2'></div>
+              </div>
+            </div>
+            <div class='mt-3 rounded-xl border border-white/10 bg-[#0d0d12] p-4 flex items-center justify-between'>
+              <div>
+                <div class='text-[10px] uppercase tracking-wider text-slate-400'>Ratio Riesgo / Beneficio</div>
+                <div id='out-rr' class='text-2xl font-bold text-slate-100 mt-1'>—</div>
+              </div>
+              <div id='out-dir' class='text-xs font-bold px-3 py-1.5 rounded-lg'></div>
+            </div>
+            <p class='text-[11px] text-slate-500 mt-3'>Los precios de futuros se redondean al tick oficial del micro contrato CME. El basis se suma al pasar de Spot a Futuros y se resta a la inversa.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-overlay" id="sync-overlay">
+        <div class="modal">
+            <div class="modal-h">
+                <h3>☁ Sincronización en la nube</h3>
+                <button class="modal-close" onclick="closeSync()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <p class="sync-help">Escribe tu nombre o apodo y un código. Usa EXACTAMENTE el mismo nombre y el mismo código en tu celular y tu computadora para compartir los mismos datos.</p>
+            <label class="sync-label">Tu nombre, usuario o apodo</label>
+            <input id="sync-name-input" class="sync-input" placeholder="ej: Haniel Cruz">
+            <label class="sync-label">Código (4 a 6 dígitos)</label>
+            <div class="sync-code-box"><input id="sync-code-input" class="sync-input sync-code-field" inputmode="numeric" maxlength="6" placeholder="ej: 4821"><button class="sync-gen-btn" onclick="generateCode()">Generar</button></div>
+            <div class="sync-status-row"><span class="sync-dot off" id="sync-dot"></span><span id="sync-status-text">Desconectado</span></div>
+            <div class="sync-btns"><button class="sync-connect-btn" onclick="connectFromForm()">Conectar / Vincular</button><button class="sync-disconnect-btn" onclick="closeSync()">Listo</button></div>
+        </div>
+    </div>
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal">
+            <div class="modal-h">
+                <h3 id="modal-title">Day <span id="modal-day-num"></span></h3>
+                <button class="modal-close" onclick="closeModal()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="modal-target" id="modal-target"></div>
+            <div class="modal-field">
+                <label>Realized P&L ($)</label>
+                <div class="input-wrap">
+                    <span class="currency">$</span>
+                    <input type="number" step="0.01" class="modal-input" id="modal-profit" placeholder="0.00" oninput="saveModalProfit()">
+                </div>
+            </div>
+            <div class="modal-field">
+                <label>Rules</label>
+                <div class="modal-toggles">
+                    <label class="toggle-item" id="modal-toggle-clock">
+                        <div class="toggle-track">
+                            <input type="checkbox" id="modal-clock-input" onchange="saveModalToggles()">
+                            <span class="toggle-slider"></span>
+                        </div>
+                        <span class="toggle-label" id="lbl-clock">2h Rule</span>
+                    </label>
+                    <label class="toggle-item" id="modal-toggle-shield">
+                        <div class="toggle-track">
+                            <input type="checkbox" id="modal-shield-input" onchange="saveModalToggles()">
+                            <span class="toggle-slider"></span>
+                        </div>
+                        <span class="toggle-label" id="lbl-shield">Shield</span>
+                    </label>
+                </div>
+            </div>
+            <button class="modal-save-btn" onclick="closeModal()">Guardar y Cerrar</button>
+        </div>
+    </div>
+
+    <div style="display:flex;justify-content:flex-end;margin-bottom:4px;">
+        <button class="btn-reset" onclick="resetTracker()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+            </svg>
+            Reset All
+        </button>
+    </div>
+
+    <div class="footer">phidias e2l tracker</div>
+
+    <script>
+        const ACCOUNT_TYPES = {
+            ifs5k: {
+                typeId: 'ifs5k', typeLabel: 'BG $5,000 Starter', badge: '5K',
+                logo: 'BG', titleHTML: 'BLUE <span>GUARDIAN</span>',
+                sub: 'Consistency Tracker · $5,000 Instant Funding Starter',
+                accountSize: 5000, target: 250, consistencyLimit: 15, minDays: 5,
+                dailyLossPct: 3, dailyLossAmount: 150,
+                ddPct: 5, ddAmount: 250, ddTrailing: false, ddLabel: 'Max Loss',
+                shield: true,
+                planTargets: { 1: 35.00, 2: 35.00, 3: 35.00, 4: 35.00, 5: 35.00, 6: 35.00, 7: 35.00, 8: 5.00 },
+                ruleLabels: { clock: '2h Rule', shield: 'Shield' }
+            },
+            std25k: {
+                typeId: 'std25k', typeLabel: 'BG $25,000 Standard', badge: '25K',
+                logo: 'BG', titleHTML: 'BLUE <span>GUARDIAN</span>',
+                sub: 'Consistency Tracker · $25,000 Instant Funded Standard',
+                accountSize: 25000, target: 1500, consistencyLimit: 20, minDays: 5,
+                dailyLossPct: 3, dailyLossAmount: 750,
+                ddPct: 6, ddAmount: 1500, ddTrailing: true, ddLabel: 'Trailing Drawdown',
+                shield: false,
+                planTargets: {},
+                ruleLabels: { clock: '2h Rule', shield: 'Shield' }
+            },
+            phidias25k: {
+                typeId: 'phidias25k', typeLabel: 'Phidias E2L $25,000', badge: 'E2L',
+                logo: 'PH', titleHTML: 'PHIDIAS <span>E2L</span>',
+                sub: 'Express to Live · $25,000 Evaluación',
+                accountSize: 25000, target: 1500, consistencyLimit: 0, minDays: 0,
+                dailyLossPct: 0, dailyLossAmount: 0,
+                ddPct: 2, ddAmount: 500, ddTrailing: false, ddLabel: 'Pérdida Máxima',
+                shield: false,
+                hasConsistency: false, hasDailyLoss: false,
+                maxMicro: 20, maxMini: 2,
+                planTargets: {},
+                ruleLabels: { clock: 'Flat 4:59 PM', shield: 'Shield' }
+            }
+        };
+        let firm = ACCOUNT_TYPES.phidias25k;
+
+        function currentAccount() { return accounts.find(function (a) { return a.id === currentAccountId; }) || accounts[0]; }
+        function resolveFirm() {
+            const acc = currentAccount();
+            const t = (acc && acc.type) || 'phidias25k';
+            firm = ACCOUNT_TYPES[t] || ACCOUNT_TYPES.phidias25k;
+        }
+
+        const MONTHS_ABBR = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+        let trackerData = JSON.parse(localStorage.getItem('bg_tracker_data')) || {};
+
+        // Migration v2: old per-day keys (day_N) -> dated keys for June 2026.
+        if (!localStorage.getItem('bg_migrated_v2')) {
+            const migrated = {};
+            let changed = false;
+            for (const k in trackerData) {
+                const m = k.match(/^day_(\d+)$/);
+                if (m) { migrated['2026-5-' + m[1]] = trackerData[k]; changed = true; }
+                else { migrated[k] = trackerData[k]; }
+            }
+            if (changed) { trackerData = migrated; localStorage.setItem('bg_tracker_data', JSON.stringify(trackerData)); }
+            localStorage.setItem('bg_migrated_v2', '1');
+        }
+
+        // Migration v3: dated keys (YYYY-M-D) belong to Blue Guardian -> prefix with firm id.
+        if (!localStorage.getItem('bg_migrated_v3')) {
+            const mig = {};
+            let ch = false;
+            for (const k in trackerData) {
+                if (/^\d{4}-\d+-\d+$/.test(k)) { mig['blueGuardian-' + k] = trackerData[k]; ch = true; }
+                else { mig[k] = trackerData[k]; }
+            }
+            if (ch) { trackerData = mig; localStorage.setItem('bg_tracker_data', JSON.stringify(trackerData)); }
+            localStorage.setItem('bg_migrated_v3', '1');
+        }
+
+        // ----- Multiple Blue Guardian accounts -----
+        let accounts = JSON.parse(localStorage.getItem('bg_accounts') || 'null');
+        if (!accounts || !accounts.length) {
+            accounts = [{ id: 'blueGuardian', name: 'Cuenta 1', type: 'phidias25k' }];
+            localStorage.setItem('bg_accounts', JSON.stringify(accounts));
+        }
+        // Migration v5: existing accounts default to a type.
+        (function () {
+            let chType = false;
+            accounts.forEach(function (a) { if (!a.type) { a.type = 'phidias25k'; chType = true; } });
+            if (chType) localStorage.setItem('bg_accounts', JSON.stringify(accounts));
+        })();
+        // Migration v6: Phidias rebrand — convert every existing account to the single E2L type.
+        if (!localStorage.getItem('bg_migrated_v6')) {
+            let chV6 = false;
+            accounts.forEach(function (a) { if (a.type !== 'phidias25k') { a.type = 'phidias25k'; chV6 = true; } });
+            if (chV6) localStorage.setItem('bg_accounts', JSON.stringify(accounts));
+            localStorage.setItem('bg_migrated_v6', '1');
+        }
+        if (!localStorage.getItem('bg_migrated_v4')) {
+            let chOrion = false;
+            for (const k in trackerData) { if (k.indexOf('orionFunded-') === 0) { delete trackerData[k]; chOrion = true; } }
+            if (chOrion) localStorage.setItem('bg_tracker_data', JSON.stringify(trackerData));
+            localStorage.setItem('bg_migrated_v4', '1');
+        }
+        let currentAccountId = localStorage.getItem('bg_current_account');
+        if (!currentAccountId || !accounts.some(function (a) { return a.id === currentAccountId; })) {
+            currentAccountId = accounts[0].id;
+            localStorage.setItem('bg_current_account', currentAccountId);
+        }
+
+        const today0 = new Date();
+        let viewYear = today0.getFullYear();
+        let viewMonth = today0.getMonth();
+        let modalDay = null;
+        let modalKey = null;
+
+        function keyFor(day) { return currentAccountId + '-' + viewYear + '-' + viewMonth + '-' + day; }
+
+        function applyFirm() {
+            resolveFirm();
+            document.getElementById('firm-logo').textContent = firm.logo;
+            document.getElementById('firm-title').innerHTML = firm.titleHTML;
+            document.getElementById('firm-sub').textContent = firm.sub;
+            document.getElementById('lbl-consistency').textContent = (firm.hasConsistency === false) ? 'Balance Actual' : 'Consistency Score';
+            document.getElementById('lbl-dll').textContent = (firm.hasDailyLoss === false) ? 'Límite de Contratos' : 'Daily Loss Limit';
+            document.getElementById('lbl-clock').textContent = firm.ruleLabels.clock;
+            document.getElementById('lbl-shield').textContent = firm.ruleLabels.shield;
+            const shieldToggle = document.getElementById('modal-toggle-shield');
+            if (shieldToggle) shieldToggle.style.display = (firm.shield === false) ? 'none' : '';
+            renderAccounts();
+        }
+
+        function persistAccounts() { localStorage.setItem('bg_accounts', JSON.stringify(accounts)); }
+
+        function renderAccounts() {
+            const wrap = document.getElementById('acct-switch');
+            if (!wrap) return;
+            wrap.innerHTML = '';
+            accounts.forEach(function (a) {
+                const btn = document.createElement('button');
+                btn.className = 'acct-opt' + (a.id === currentAccountId ? ' active' : '');
+                btn.title = 'Clic para abrir · doble clic para renombrar';
+                btn.onclick = function () { setAccount(a.id); };
+                btn.ondblclick = function () { renameAccount(a.id); };
+                const label = document.createElement('span');
+                label.textContent = a.name;
+                btn.appendChild(label);
+                const badge = document.createElement('span');
+                badge.textContent = (ACCOUNT_TYPES[a.type] && ACCOUNT_TYPES[a.type].badge) || 'E2L';
+                badge.style.cssText = 'font-size:9px; font-weight:600; opacity:0.6; margin-left:1px;';
+                btn.appendChild(badge);
+                if (accounts.length > 1) {
+                    const x = document.createElement('span');
+                    x.className = 'acct-x';
+                    x.textContent = '×';
+                    x.title = 'Eliminar cuenta';
+                    x.onclick = function (ev) { ev.stopPropagation(); deleteAccount(a.id); };
+                    btn.appendChild(x);
+                }
+                wrap.appendChild(btn);
+            });
+        }
+
+        function setAccount(id) {
+            if (!accounts.some(function (a) { return a.id === id; })) return;
+            currentAccountId = id;
+            localStorage.setItem('bg_current_account', id);
+            applyFirm();
+            refresh();
+        }
+
+        function addAccount() {
+            const name = (prompt('Nombre de la nueva cuenta:', 'Cuenta ' + (accounts.length + 1)) || '').trim();
+            if (!name) return;
+            const choice = prompt('Tipo de cuenta — 1 = Phidias E2L $25,000 · 2 = Blue Guardian $5,000 Starter · 3 = Blue Guardian $25,000 Standard', '1');
+            if (choice === null) return;
+            const c = String(choice).trim();
+            const type = (c === '2') ? 'ifs5k' : (c === '3') ? 'std25k' : 'phidias25k';
+            const id = 'acc-' + Date.now();
+            accounts.push({ id: id, name: name, type: type });
+            persistAccounts();
+            currentAccountId = id;
+            localStorage.setItem('bg_current_account', id);
+            applyFirm();
+            refresh();
+            pushSync();
+        }
+
+        function renameAccount(id) {
+            const acc = accounts.find(function (a) { return a.id === id; });
+            if (!acc) return;
+            const name = (prompt('Nuevo nombre de la cuenta:', acc.name) || '').trim();
+            if (!name) return;
+            acc.name = name;
+            persistAccounts();
+            renderAccounts();
+            pushSync();
+        }
+
+        function deleteAccount(id) {
+            if (accounts.length <= 1) return;
+            const acc = accounts.find(function (a) { return a.id === id; });
+            if (!acc) return;
+            if (!confirm('¿Eliminar la cuenta "' + acc.name + '" y todos sus datos? Esto no se puede deshacer.')) return;
+            const prefix = id + '-';
+            for (const k in trackerData) { if (k.indexOf(prefix) === 0) delete trackerData[k]; }
+            accounts = accounts.filter(function (a) { return a.id !== id; });
+            persistAccounts();
+            if (currentAccountId === id) currentAccountId = accounts[0].id;
+            localStorage.setItem('bg_current_account', currentAccountId);
+            saveData();
+            applyFirm();
+            refresh();
+        }
+
+        function toggleTheme() {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('bg_theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+        }
+
+        if (localStorage.getItem('bg_theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+        }
+
+        function buildCells() {
+            const first = new Date(viewYear, viewMonth, 1);
+            const last = new Date(viewYear, viewMonth + 1, 0);
+            const daysIn = last.getDate();
+            const startDow = first.getDay(); // 0 = Sunday
+            const today = new Date();
+            const isT = (d) => d.getDate() === today.getDate() && d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear();
+
+            const cells = [];
+            const prev = new Date(viewYear, viewMonth, 0).getDate();
+            for (let i = startDow - 1; i >= 0; i--)
+                cells.push({ day: prev - i, other: true });
+            for (let d = 1; d <= daysIn; d++)
+                cells.push({ day: d, other: false, today: isT(new Date(viewYear, viewMonth, d)) });
+            const rem = cells.length % 7;
+            if (rem > 0) for (let i = 1; i <= 7 - rem; i++) cells.push({ day: i, other: true });
+            return cells;
+        }
+
+        function getStatus(day) {
+            const data = trackerData[keyFor(day)];
+            if (!data || data.profit === '' || data.profit === null || isNaN(data.profit)) return 'empty';
+            return data.profit > 0 ? 'profit' : (data.profit < 0 ? 'loss' : 'empty');
+        }
+
+        function fmtMoney(v) {
+            return (v < 0 ? '-' : '') + '$' + Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function formatProfit(day) {
+            const data = trackerData[keyFor(day)];
+            if (!data || data.profit === '' || data.profit === null || isNaN(data.profit)) return '';
+            return fmtMoney(parseFloat(data.profit));
+        }
+
+        function renderCal() {
+            const grid = document.getElementById('calendar-grid');
+            grid.innerHTML = '';
+            const cells = buildCells();
+
+            cells.forEach(c => {
+                const div = document.createElement('div');
+                let cls = 'day-cell';
+                if (c.other) cls += ' other';
+                if (c.today) cls += ' today';
+                let stCls = '';
+                if (!c.other) {
+                    stCls = getStatus(c.day);
+                    cls += ' clickable';
+                    if (stCls === 'profit') cls += ' g-bg';
+                    else if (stCls === 'loss') cls += ' r-bg';
+                }
+                div.className = cls;
+                if (!c.other) {
+                    div.setAttribute('data-day', c.day);
+                    div.onclick = () => openModal(c.day);
+                }
+                const str = !c.other ? formatProfit(c.day) : '';
+                div.innerHTML =
+                    '<div class="day-num">' + c.day + '</div>' +
+                    (!c.other
+                        ? '<div class="day-body">' + (str ? '<span class="day-money ' + (stCls === 'profit' ? 'g' : 'r') + '">' + str + '</span>' : '') + '</div>'
+                        : '');
+                grid.appendChild(div);
+            });
+        }
+
+        function changeMonth(delta) {
+            const d = new Date(viewYear, viewMonth + delta, 1);
+            viewYear = d.getFullYear();
+            viewMonth = d.getMonth();
+            refresh();
+        }
+
+        function goToday() {
+            const d = new Date();
+            viewYear = d.getFullYear();
+            viewMonth = d.getMonth();
+            refresh();
+        }
+
+        function updateMonthTitle() {
+            document.getElementById('cal-month-title').textContent = MONTHS_ABBR[viewMonth] + ' ' + viewYear;
+        }
+
+        function refresh() {
+            updateMonthTitle();
+            renderCal();
+            calcMetrics();
+        }
+
+        function openModal(day) {
+            const overlay = document.getElementById('modal-overlay');
+            overlay.style.display = '';
+            modalDay = day;
+            modalKey = keyFor(day);
+            const data = trackerData[modalKey] || { profit: '', ruleClock: false, ruleShield: false };
+            const target = firm.planTargets[day];
+
+            document.getElementById('modal-day-num').textContent = day;
+            const titleEl = document.getElementById('modal-title');
+            let dateSpan = titleEl.querySelector('.modal-date');
+            if (!dateSpan) {
+                dateSpan = document.createElement('span');
+                dateSpan.className = 'modal-date';
+                titleEl.appendChild(dateSpan);
+            }
+            dateSpan.textContent = '— ' + MONTHS_ABBR[viewMonth] + ' ' + day + ', ' + viewYear;
+            document.getElementById('modal-target').textContent = target
+                ? 'Ideal target: +$' + target.toFixed(2)
+                : 'Sin meta diaria asignada';
+            document.getElementById('modal-profit').value = data.profit;
+
+            document.getElementById('modal-clock-input').checked = data.ruleClock;
+            document.getElementById('modal-toggle-clock').classList.toggle('on', data.ruleClock);
+            document.getElementById('modal-shield-input').checked = data.ruleShield;
+            document.getElementById('modal-toggle-shield').classList.toggle('on', data.ruleShield);
+
+            document.getElementById('modal-overlay').classList.add('active');
+        }
+
+        function closeModal() {
+            const overlay = document.getElementById('modal-overlay');
+            overlay.classList.remove('active');
+            overlay.style.display = 'none';
+            if (document.activeElement) document.activeElement.blur();
+            modalDay = null;
+            modalKey = null;
+        }
+
+        function saveModalProfit() {
+            if (modalKey === null) return;
+            const val = document.getElementById('modal-profit').value;
+            if (!trackerData[modalKey]) trackerData[modalKey] = { profit: '', ruleClock: false, ruleShield: false };
+            trackerData[modalKey].profit = val === '' ? '' : parseFloat(val);
+            saveData();
+            renderCal();
+            calcMetrics();
+        }
+
+        function saveModalToggles() {
+            if (modalKey === null) return;
+            if (!trackerData[modalKey]) trackerData[modalKey] = { profit: '', ruleClock: false, ruleShield: false };
+            trackerData[modalKey].ruleClock = document.getElementById('modal-clock-input').checked;
+            trackerData[modalKey].ruleShield = document.getElementById('modal-shield-input').checked;
+            document.getElementById('modal-toggle-clock').classList.toggle('on', trackerData[modalKey].ruleClock);
+            document.getElementById('modal-toggle-shield').classList.toggle('on', trackerData[modalKey].ruleShield);
+            saveData();
+            calcMetrics();
+        }
+
+        document.getElementById('modal-overlay').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+
+        function calcMetrics() {
+            // Aggregate across all months for the SELECTED account.
+            const prefix = currentAccountId + '-';
+            const entries = [];
+            let total = 0, daysOp = 0, maxD = 0;
+            for (const key in trackerData) {
+                if (key.indexOf(prefix) !== 0) continue;
+                const data = trackerData[key];
+                if (!data || data.profit === '' || data.profit === null || isNaN(data.profit)) continue;
+                const p = parseFloat(data.profit);
+                total += p;
+                if (p > maxD) maxD = p;
+                const parts = key.slice(prefix.length).split('-');
+                if (parts.length === 3) {
+                    const dObj = new Date(+parts[0], +parts[1], +parts[2]);
+                    const dow = dObj.getDay();
+                    if (dow !== 0 && dow !== 6) daysOp++;
+                    entries.push({ t: dObj.getTime(), p: p });
+                }
+            }
+
+            // ----- Total Profit + Target -----
+            const profitEl = document.getElementById('stat-profit');
+            profitEl.textContent = '$' + total.toFixed(2);
+            profitEl.className = 'metric-val' + (total > 0 ? ' green' : total < 0 ? ' red' : '');
+            document.getElementById('stat-balance').textContent = 'Balance: $' + (firm.accountSize + total).toFixed(2) + ' · Target: $' + firm.target;
+            document.getElementById('stat-progress').style.width = Math.min(Math.max((total / firm.target) * 100, 0), 100) + '%';
+
+            // ----- (repurposed) Balance Actual -----
+            const csEl = document.getElementById('stat-consistency');
+            const lbl = document.getElementById('stat-consistency-lbl');
+            if (firm.hasConsistency === false) {
+                const balNow = firm.accountSize + total;
+                csEl.textContent = '$' + balNow.toFixed(2);
+                csEl.className = 'metric-val' + (total > 0 ? ' green' : total < 0 ? ' red' : '');
+                lbl.textContent = 'Meta: $' + (firm.accountSize + firm.target).toFixed(2);
+            } else {
+                let cs = 0;
+                if (total > 0 && maxD > 0) cs = (maxD / total) * 100;
+                csEl.textContent = cs.toFixed(2) + '%';
+                if (cs === 0) { csEl.className = 'metric-val'; lbl.textContent = 'Limit: ' + firm.consistencyLimit + '%'; }
+                else if (cs <= firm.consistencyLimit) { csEl.className = 'metric-val green'; lbl.textContent = '✓ Consistency OK'; }
+                else { csEl.className = 'metric-val red'; lbl.textContent = 'Dilute your best day!'; }
+            }
+
+            // ----- Days Traded -----
+            const dEl = document.getElementById('stat-days');
+            const dSub = document.getElementById('stat-days-sub');
+            if (firm.minDays > 0) {
+                dEl.textContent = daysOp + ' / ' + firm.minDays;
+                dEl.className = daysOp >= firm.minDays ? 'metric-val green' : 'metric-val';
+                dSub.textContent = 'Mínimo requerido';
+            } else {
+                dEl.textContent = String(daysOp);
+                dEl.className = 'metric-val';
+                dSub.textContent = 'Sin mínimo · finde no cuenta';
+            }
+
+            // ----- (repurposed) Límite de Contratos -----
+            const dllEl = document.getElementById('stat-dll');
+            const dllSub = document.getElementById('stat-dll-sub');
+            if (firm.hasDailyLoss === false) {
+                dllEl.textContent = (firm.maxMicro || 0) + ' / ' + (firm.maxMini || 0);
+                dllEl.className = 'metric-val';
+                dllSub.textContent = 'Máx. Micro / Mini simultáneos';
+            } else {
+                dllEl.textContent = '-$' + firm.dailyLossAmount.toFixed(2);
+                dllEl.className = 'metric-val red';
+                const rt = new Date();
+                const todayKey = prefix + rt.getFullYear() + '-' + rt.getMonth() + '-' + rt.getDate();
+                const td = trackerData[todayKey];
+                const todayPnl = (td && td.profit !== '' && td.profit !== null && !isNaN(td.profit)) ? parseFloat(td.profit) : 0;
+                if (todayPnl < 0) {
+                    const used = Math.min(Math.abs(todayPnl), firm.dailyLossAmount);
+                    dllSub.textContent = firm.dailyLossPct + '% · hoy: -$' + used.toFixed(2) + ' / $' + firm.dailyLossAmount.toFixed(2);
+                } else {
+                    dllSub.textContent = firm.dailyLossPct + '% del balance · se reinicia cada día';
+                }
+            }
+
+            // ----- Max Loss / Drawdown -----
+            entries.sort(function (a, b) { return a.t - b.t; });
+            let bal = firm.accountSize, peak = firm.accountSize, floor = firm.accountSize - firm.ddAmount;
+            if (firm.ddTrailing) {
+                entries.forEach(function (e) {
+                    bal += e.p;
+                    if (bal > peak) { peak = bal; floor = peak - firm.ddAmount; }
+                });
+            } else {
+                bal = firm.accountSize + total;
+                floor = firm.accountSize - firm.ddAmount;
+            }
+            const buffer = bal - floor;
+            const ddTitle = document.getElementById('stat-dd-title');
+            const ddEl = document.getElementById('stat-dd');
+            const ddBar = document.getElementById('stat-dd-bar');
+            const ddSub = document.getElementById('stat-dd-sub');
+            ddTitle.textContent = firm.ddLabel;
+            ddEl.textContent = '$' + floor.toFixed(2);
+            const pct = Math.min(Math.max((buffer / firm.ddAmount) * 100, 0), 100);
+            ddBar.style.width = pct + '%';
+            ddBar.style.background = buffer <= 0 ? 'var(--red)' : (buffer < firm.ddAmount * 0.34 ? '#F59E0B' : 'var(--green)');
+            const floorTxt = firm.ddTrailing ? 'Floor (sube con tu pico)' : 'Floor fijo';
+            if (buffer <= 0) {
+                ddEl.className = 'metric-val red';
+                ddSub.textContent = '⚠ Límite alcanzado · floor $' + floor.toFixed(2);
+            } else {
+                ddEl.className = 'metric-val';
+                ddSub.textContent = floorTxt + ': $' + floor.toFixed(2) + ' · te quedan $' + buffer.toFixed(2) + ' antes de romperlo';
+            }
+
+            // ----- Excedente Retirable -----
+            const minCushion = getCushion();
+            const surplusEl = document.getElementById('stat-surplus');
+            const surplusSub = document.getElementById('stat-surplus-sub');
+            if (surplusEl) {
+                const withdrawable = Math.max(0, Math.min(buffer - minCushion, total));
+                if (buffer <= 0) {
+                    surplusEl.textContent = '$0.00';
+                    surplusEl.className = 'metric-val red';
+                    surplusSub.textContent = 'Cuenta en el límite · no retires. (Toca para ajustar el colchón)';
+                } else if (withdrawable > 0) {
+                    surplusEl.textContent = '$' + withdrawable.toFixed(2);
+                    surplusEl.className = 'metric-val green';
+                    surplusSub.textContent = 'Retirable dejando un colchón de $' + minCushion.toFixed(2) + ' sobre el floor ($' + floor.toFixed(2) + '). Toca para ajustar.';
+                } else {
+                    surplusEl.textContent = '$0.00';
+                    surplusEl.className = 'metric-val';
+                    const need = Math.max(0, minCushion - buffer);
+                    surplusSub.textContent = 'Aún sin excedente. Te faltan $' + need.toFixed(2) + ' para tu colchón de $' + minCushion.toFixed(2) + '. Toca para ajustar.';
+                }
+            }
+        }
+
+        function getCushion() {
+            const v = localStorage.getItem('bg_cushion_' + currentAccountId);
+            if (v !== null && !isNaN(parseFloat(v))) return parseFloat(v);
+            return firm.ddAmount;
+        }
+
+        function setCushion() {
+            const cur = getCushion();
+            const inp = prompt('Colchón mínimo a mantener SIEMPRE sobre el floor (en $). El excedente retirable es lo que puedes sacar dejando ese colchón intacto:', String(cur));
+            if (inp === null) return;
+            const n = parseFloat(inp);
+            if (isNaN(n) || n < 0) { alert('Ingresa un número válido.'); return; }
+            localStorage.setItem('bg_cushion_' + currentAccountId, String(n));
+            calcMetrics();
+        }
+
+        function resetTracker() {
+            const acc = accounts.find(function (a) { return a.id === currentAccountId; });
+            const nm = acc ? acc.name : 'esta cuenta';
+            if (confirm('¿Borrar todos los datos de "' + nm + '"?')) {
+                const prefix = currentAccountId + '-';
+                for (const key in trackerData) { if (key.indexOf(prefix) === 0) delete trackerData[key]; }
+                saveData();
+                refresh();
+            }
+        }
+
+        // ===== Cloud Sync (Firebase Realtime Database) =====
+        const BAKED_DB_URL = 'https://calendario-trading-b3f02-default-rtdb.firebaseio.com';
+        let syncName = localStorage.getItem('bg_sync_name') || null;
+        let syncCode = localStorage.getItem('bg_sync_code') || null;
+        let syncDb = null, syncRef = null, syncConnected = false, lastPushedAt = 0, applyingRemote = false, initialSync = true;
+        function slugify(s) { return (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'user'; }
+        function sessionKey(name, code) { return slugify(name) + '_' + code; }
+
+        function setSyncStatus(state, msg) {
+            const dot = document.getElementById('sync-dot');
+            const txt = document.getElementById('sync-status-text');
+            const sdot = document.getElementById('session-dot');
+            const slabel = document.getElementById('session-label');
+            if (dot) dot.className = 'sync-dot ' + state;
+            if (txt) txt.textContent = msg;
+            if (sdot) sdot.className = 'session-dot ' + state;
+            if (slabel) slabel.textContent = (syncConnected && syncName) ? syncName : 'Iniciar sesión';
+        }
+
+        function saveData() {
+            localStorage.setItem('bg_tracker_data', JSON.stringify(trackerData));
+            pushSync();
+        }
+
+        function pushSync() {
+            if (!syncConnected || !syncRef || applyingRemote) return;
+            lastPushedAt = Date.now();
+            syncRef.set({ data: trackerData, accounts: accounts, updatedAt: lastPushedAt }).catch(function (e) {
+                setSyncStatus('error', 'Error al guardar: ' + (e && e.message ? e.message : e));
+            });
+        }
+        function mergeAccounts(primary, extra) {
+            const out = []; const seen = {};
+            (primary || []).forEach(function (a) { if (a && a.id && !seen[a.id]) { seen[a.id] = 1; out.push({ id: a.id, name: a.name || 'Cuenta', type: a.type || 'phidias25k' }); } });
+            (extra || []).forEach(function (a) { if (a && a.id && !seen[a.id]) { seen[a.id] = 1; out.push({ id: a.id, name: a.name || 'Cuenta', type: a.type || 'phidias25k' }); } });
+            if (!out.length) out.push({ id: 'blueGuardian', name: 'Cuenta 1', type: 'phidias25k' });
+            return out;
+        }
+
+        function loadFirebaseSdk(cb) {
+            if (window.firebase && window.firebase.database) { cb(); return; }
+            const a = document.createElement('script');
+            a.src = 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js';
+            a.onload = function () {
+                const b = document.createElement('script');
+                b.src = 'https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js';
+                b.onload = cb;
+                b.onerror = function () { setSyncStatus('error', 'No se pudo cargar Firebase (revisa tu internet)'); };
+                document.head.appendChild(b);
+            };
+            a.onerror = function () { setSyncStatus('error', 'No se pudo cargar Firebase (revisa tu internet)'); };
+            document.head.appendChild(a);
+        }
+
+        function connectSync(name, code) {
+            setSyncStatus('connecting', 'Conectando...');
+            initialSync = true;
+            loadFirebaseSdk(function () {
+                try {
+                    if (!window.firebase.apps.length) window.firebase.initializeApp({ databaseURL: BAKED_DB_URL });
+                    syncDb = window.firebase.database();
+                    syncRef = syncDb.ref('trackers/' + sessionKey(name, code));
+                } catch (e) {
+                    setSyncStatus('error', 'Configuración inválida: ' + (e && e.message ? e.message : e));
+                    return;
+                }
+                syncConnected = true;
+                syncName = name;
+                syncCode = code;
+                localStorage.setItem('bg_sync_name', name);
+                localStorage.setItem('bg_sync_code', code);
+                syncRef.on('value', function (snap) {
+                    const remote = snap.val();
+                    if (initialSync) {
+                        initialSync = false;
+                        const remoteData = (remote && remote.data) ? remote.data : {};
+                        trackerData = Object.assign({}, remoteData, trackerData);
+                        const remoteAccts = (remote && remote.accounts) ? remote.accounts : [];
+                        accounts = mergeAccounts(remoteAccts, accounts);
+                        persistAccounts();
+                        if (!accounts.some(function (a) { return a.id === currentAccountId; })) { currentAccountId = accounts[0].id; localStorage.setItem('bg_current_account', currentAccountId); }
+                        localStorage.setItem('bg_tracker_data', JSON.stringify(trackerData));
+                        if (typeof refresh === 'function') refresh();
+                        if (typeof applyFirm === 'function') applyFirm();
+                        pushSync();
+                        setSyncStatus('ok', 'Conectado y sincronizado');
+                        closeSync();
+                        return;
+                    }
+                    if (remote && remote.updatedAt && remote.updatedAt === lastPushedAt) {
+                        setSyncStatus('ok', 'Conectado y sincronizado');
+                        return;
+                    }
+                    applyingRemote = true;
+                    trackerData = (remote && remote.data) ? remote.data : {};
+                    if (remote && remote.accounts && remote.accounts.length) {
+                        accounts = remote.accounts.map(function (a) { return { id: a.id, name: a.name || 'Cuenta', type: a.type || 'phidias25k' }; });
+                        persistAccounts();
+                        if (!accounts.some(function (a) { return a.id === currentAccountId; })) { currentAccountId = accounts[0].id; localStorage.setItem('bg_current_account', currentAccountId); }
+                    }
+                    localStorage.setItem('bg_tracker_data', JSON.stringify(trackerData));
+                    applyingRemote = false;
+                    if (typeof refresh === 'function') refresh();
+                    if (typeof applyFirm === 'function') applyFirm();
+                    setSyncStatus('ok', 'Sincronizado a las ' + new Date().toLocaleTimeString());
+                }, function (e) {
+                    setSyncStatus('error', 'Error de conexión: ' + (e && e.message ? e.message : e));
+                });
+            });
+        }
+
+        function randomCode() { return String(Math.floor(1000 + Math.random() * 9000)); }
+        function generateCode() {
+            const c = randomCode();
+            document.getElementById('sync-code-input').value = c;
+            setSyncStatus('off', 'Código nuevo ' + c + ' — pulsa Conectar');
+        }
+        function connectFromForm() {
+            const name = document.getElementById('sync-name-input').value.trim();
+            const code = document.getElementById('sync-code-input').value.trim();
+            if (!name) { setSyncStatus('error', 'Escribe tu nombre o apodo'); return; }
+            if (!/^[0-9]{4,6}$/.test(code)) { setSyncStatus('error', 'El código debe tener de 4 a 6 dígitos'); return; }
+            connectSync(name, code);
+        }
+
+        function disconnectSync() {
+            if (syncRef) { try { syncRef.off(); } catch (e) {} }
+            syncConnected = false; syncRef = null; syncDb = null; initialSync = true;
+            localStorage.removeItem('bg_sync_name');
+            localStorage.removeItem('bg_sync_code');
+            syncName = null;
+            syncCode = null;
+            setSyncStatus('off', 'Desconectado');
+        }
+
+        function openSync() {
+            const o = document.getElementById('sync-overlay');
+            o.style.display = 'flex';
+            o.classList.add('active');
+            const nameEl = document.getElementById('sync-name-input');
+            const codeEl = document.getElementById('sync-code-input');
+            if (syncName && !nameEl.value) nameEl.value = syncName;
+            if (syncCode) codeEl.value = syncCode;
+            else if (!/^[0-9]{4,6}$/.test(codeEl.value.trim())) codeEl.value = randomCode();
+        }
+        function closeSync() {
+            const o = document.getElementById('sync-overlay');
+            o.classList.remove('active');
+            o.style.display = 'none';
+        }
+
+        function initSync() {
+            setSyncStatus('off', 'Desconectado');
+            if (syncName && syncCode) {
+                connectSync(syncName, syncCode);
+            } else {
+                openSync();
+            }
+        }
+
+        document.getElementById('sync-overlay').addEventListener('click', function (e) { if (e.target === this) closeSync(); });
+        /* ================= CALCULADORA DE EQUIVALENCIAS ================= */
+        /* Config por defecto de activos (mercados principales, julio 2026).   */
+        /* basis = premium forward = (precio futuro) - (precio spot).          */
+        const CALC_DEFAULT_ASSETS = {
+            gold:   { key:'gold',   name:'Oro',    spot:'XAUUSD', fut:'MGCQ6', futLabel:'Micro Oro Ago', tickValue:1.0, basis:15.0,    futTick:0.1,    futDec:1, spotDec:2, pip:0,      pipName:'pts' },
+            euro:   { key:'euro',   name:'Euro',   spot:'EURUSD', fut:'M6EU6', futLabel:'Micro Euro Sep', tickValue:1.25, basis:0.00355, futTick:0.0001, futDec:4, spotDec:5, pip:0.0001, pipName:'pips' },
+            nasdaq: { key:'nasdaq', name:'Nasdaq', spot:'NAS100', fut:'MNQU6', futLabel:'Micro Nasdaq Sep', tickValue:0.5, basis:45,     futTick:0.25,   futDec:2, spotDec:1, pip:0,      pipName:'pts' },
+            us30:   { key:'us30',   name:'US30 (Dow)', spot:'US30',  fut:'MYMU6', futLabel:'Micro Dow Sep', tickValue:0.5,  basis:10.0, futTick:1.0,    futDec:0, spotDec:1, pip:0, pipName:'pts' },
+            sp500:  { key:'sp500',  name:'S&P 500',    spot:'US500', fut:'MESU6', futLabel:'Micro S&P Sep', tickValue:1.25, basis:5.0,  futTick:0.25,   futDec:2, spotDec:1, pip:0, pipName:'pts' }
+        };
+        let calcAssets = {};
+        let calcMode = localStorage.getItem('phi_calc_mode') || 'A';   // A: spot->fut, B: fut->spot
+        let calcCurrent = localStorage.getItem('phi_calc_asset') || 'gold';
+
+        /* Carga defaults + personalizados + overrides de basis guardados. */
+        function calcLoad() {
+            calcAssets = {};
+            for (const k in CALC_DEFAULT_ASSETS) { calcAssets[k] = Object.assign({}, CALC_DEFAULT_ASSETS[k]); }
+            const custom = JSON.parse(localStorage.getItem('phi_calc_custom') || '[]');
+            custom.forEach(function (c) { calcAssets[c.key] = c; });
+            const basisOv = JSON.parse(localStorage.getItem('phi_calc_basis') || '{}');
+            for (const k in basisOv) { if (calcAssets[k]) calcAssets[k].basis = basisOv[k]; }
+            if (!calcAssets[calcCurrent]) calcCurrent = 'gold';
+        }
+        function calcAsset() { return calcAssets[calcCurrent] || calcAssets.gold; }
+
+        /* Redondeo al tick oficial del micro contrato CME. */
+        function roundToTick(price, tick) {
+            if (!tick || tick <= 0) return price;
+            const factor = Math.round(1 / tick);
+            return Math.round(Number((price * factor).toPrecision(15))) / factor;
+        }
+        function fmt(n, dec) {
+            if (isNaN(n)) return '—';
+            return n.toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+        }
+
+        /* Rellena el desplegable de activos. */
+        function calcRenderAssets() {
+            const sel = document.getElementById('calc-asset');
+            if (!sel) return;
+            sel.innerHTML = '';
+            for (const k in calcAssets) {
+                const a = calcAssets[k];
+                const opt = document.createElement('option');
+                opt.value = k;
+                opt.textContent = a.name + '  ·  ' + a.spot + ' → ' + a.fut;
+                if (k === calcCurrent) opt.selected = true;
+                sel.appendChild(opt);
+            }
+        }
+
+        /* Sincroniza etiquetas de modo/activo y el basis por defecto. */
+        function calcSyncUI() {
+            const a = calcAsset();
+            const bA = document.getElementById('calc-mode-a');
+            const bB = document.getElementById('calc-mode-b');
+            [bA, bB].forEach(function (b) { if (b) b.classList.remove('bg-emerald-500', 'text-black'); });
+            if (calcMode === 'A' && bA) bA.classList.add('bg-emerald-500', 'text-black');
+            if (calcMode === 'B' && bB) bB.classList.add('bg-emerald-500', 'text-black');
+            document.getElementById('calc-map').textContent = 'Spot/CFD: ' + a.spot + '   ·   Futuro: ' + a.fut + (a.futLabel ? '  (' + a.futLabel + ')' : '');
+            const inBadge = document.getElementById('calc-in-badge');
+            const outBadge = document.getElementById('calc-out-badge');
+            if (calcMode === 'A') {
+                inBadge.textContent = 'Entrada: Spot ' + a.spot;
+                outBadge.textContent = 'Salida: Futuro ' + a.fut;
+            } else {
+                inBadge.textContent = 'Entrada: Futuro ' + a.fut;
+                outBadge.textContent = 'Salida: Spot ' + a.spot;
+            }
+            const bi = document.getElementById('calc-basis');
+            if (document.activeElement !== bi) bi.value = a.basis;
+            const ti = document.getElementById('calc-tickinfo');
+            if (ti) ti.textContent = a.fut + ': $' + (a.tickValue || 0).toFixed(2) + ' por tick de ' + a.futTick + '  ·  valor CME (Rithmic no lo altera)';
+            calcBasisHint();
+        }
+        function calcBasisHint() {
+            const a = calcAsset();
+            const hint = document.getElementById('calc-basis-hint');
+            let txt = 'Futuro = Spot + basis. Editable: cambia cada día.';
+            if (a.pip) {
+                const b = parseFloat(document.getElementById('calc-basis').value);
+                if (!isNaN(b)) txt += '   (≈ ' + (b / a.pip).toFixed(1) + ' ' + a.pipName + ')';
+            }
+            hint.textContent = txt;
+        }
+
+        /* Convierte un precio segun el modo activo. */
+        function calcConvert(v, a, basis) {
+            if (isNaN(v)) return NaN;
+            if (calcMode === 'A') return roundToTick(v + basis, a.futTick);  // spot -> futuro (redondeo al tick)
+            return v - basis;                                               // futuro -> spot
+        }
+
+        /* Recalcula y pinta los resultados en tiempo real. */
+        function calcCompute() {
+            const a = calcAsset();
+            const basis = parseFloat(document.getElementById('calc-basis').value) || 0;
+            const outDec = (calcMode === 'A') ? a.futDec : a.spotDec;
+            const entry = parseFloat(document.getElementById('calc-entry').value);
+            const sl = parseFloat(document.getElementById('calc-sl').value);
+            const tp = parseFloat(document.getElementById('calc-tp').value);
+            const oe = calcConvert(entry, a, basis);
+            const os = calcConvert(sl, a, basis);
+            const ot = calcConvert(tp, a, basis);
+            document.getElementById('out-entry').textContent = fmt(oe, outDec);
+            document.getElementById('out-sl').textContent = fmt(os, outDec);
+            document.getElementById('out-tp').textContent = fmt(ot, outDec);
+            function distTxt(d) {
+                if (isNaN(d)) return '';
+                let s = 'Distancia: ' + fmt(d, outDec) + ' pts';
+                if (a.pip) s += '  (' + (d / a.pip).toFixed(1) + ' ' + a.pipName + ')';
+                return s;
+            }
+            const dSL = (!isNaN(oe) && !isNaN(os)) ? Math.abs(oe - os) : NaN;
+            const dTP = (!isNaN(oe) && !isNaN(ot)) ? Math.abs(ot - oe) : NaN;
+            document.getElementById('out-distsl').textContent = distTxt(dSL);
+            document.getElementById('out-disttp').textContent = distTxt(dTP);
+            // Riesgo y ganancia en USD segun numero de micro-contratos y valor del tick CME
+            const contracts = Math.max(1, parseInt(document.getElementById('calc-contracts').value, 10) || 1);
+            const tv = a.tickValue || 0;
+            const usdSL = (!isNaN(dSL) && tv > 0) ? (dSL / a.futTick) * tv * contracts : NaN;
+            const usdTP = (!isNaN(dTP) && tv > 0) ? (dTP / a.futTick) * tv * contracts : NaN;
+            document.getElementById('out-usdsl').textContent = isNaN(usdSL) ? '' : ('Riesgo: -$' + usdSL.toFixed(2) + '  (' + contracts + 'x)');
+            document.getElementById('out-usdtp').textContent = isNaN(usdTP) ? '' : ('Ganancia: +$' + usdTP.toFixed(2) + '  (' + contracts + 'x)');
+            const rrEl = document.getElementById('out-rr');
+            const dirEl = document.getElementById('out-dir');
+            if (!isNaN(dSL) && dSL > 0 && !isNaN(dTP)) {
+                const rr = dTP / dSL;
+                rrEl.textContent = '1 : ' + rr.toFixed(2);
+                rrEl.className = 'text-2xl font-bold mt-1 ' + (rr >= 1 ? 'text-emerald-400' : 'text-rose-400');
+            } else {
+                rrEl.textContent = '—';
+                rrEl.className = 'text-2xl font-bold text-slate-100 mt-1';
+            }
+            if (!isNaN(oe) && !isNaN(ot)) {
+                const isLong = ot >= oe;
+                dirEl.textContent = isLong ? 'LONG' : 'SHORT';
+                dirEl.className = 'text-xs font-bold px-3 py-1.5 rounded-lg ' + (isLong ? 'bg-emerald-500/15 text-emerald-300' : 'bg-rose-500/15 text-rose-300');
+            } else {
+                dirEl.textContent = '';
+                dirEl.className = 'text-xs font-bold px-3 py-1.5 rounded-lg';
+            }
+        }
+        function calcSetMode(m) { calcMode = m; localStorage.setItem('phi_calc_mode', m); calcSyncUI(); calcCompute(); }
+        function calcSelectAsset(k) { calcCurrent = k; localStorage.setItem('phi_calc_asset', k); calcSyncUI(); calcCompute(); }
+
+        /* Guarda el basis editado como override del activo actual. */
+        function calcSaveBasis() {
+            const v = parseFloat(document.getElementById('calc-basis').value);
+            if (isNaN(v)) return;
+            calcAsset().basis = v;
+            const ov = JSON.parse(localStorage.getItem('phi_calc_basis') || '{}');
+            ov[calcCurrent] = v;
+            localStorage.setItem('phi_calc_basis', JSON.stringify(ov));
+        }
+
+        /* Alta de activo personalizado (Spot + Futuro + decimales + basis). */
+        function calcAddCustom() {
+            const spot = (prompt('Nombre del activo Spot/CFD (ej: US30):') || '').trim();
+            if (!spot) return;
+            const fut = (prompt('Nombre del Futuro / Micro (ej: MYMU6):') || '').trim();
+            if (!fut) return;
+            const dec = parseInt(prompt('Decimales del futuro para el redondeo (ej: 2):', '2'), 10);
+            const d = isNaN(dec) ? 2 : dec;
+            const basis = parseFloat(prompt('Basis inicial (Futuro - Spot):', '0'));
+            const tv = parseFloat(prompt('Valor del tick en USD (ej: 1.25):', '1'));
+            const key = 'custom-' + Date.now();
+            const asset = { key: key, name: spot, spot: spot, fut: fut, futLabel: 'Personalizado', basis: isNaN(basis) ? 0 : basis, futTick: Math.pow(10, -d), futDec: d, spotDec: d + 1, tickValue: isNaN(tv) ? 1 : tv, pip: 0, pipName: 'pts' };
+            const custom = JSON.parse(localStorage.getItem('phi_calc_custom') || '[]');
+            custom.push(asset);
+            localStorage.setItem('phi_calc_custom', JSON.stringify(custom));
+            calcAssets[key] = asset;
+            calcRenderAssets();
+            calcSelectAsset(key);
+        }
+
+        // ---- Fuentes de datos para el basis (futuro menos spot) ----
+        // Simbolos de Yahoo Finance por activo (spot y futuro) + decimales de salida.
+        const CALC_YH = {
+            gold:   { spot: 'XAUUSD=X', fut: 'GC=F', dec: 1 },
+            euro:   { spot: 'EURUSD=X', fut: '6E=F', dec: 5 },
+            nasdaq: { spot: '^NDX',     fut: 'NQ=F', dec: 1 },
+            us30:   { spot: '^DJI',     fut: 'YM=F', dec: 0 },
+            sp500:  { spot: '^GSPC',    fut: 'ES=F', dec: 1 }
+        };
+        // Proxies CORS publicos para poder leer Yahoo desde el navegador (sin servidor propio).
+        const CALC_PROXIES = [
+            function (u) { return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u); },
+            function (u) { return 'https://corsproxy.io/?url=' + encodeURIComponent(u); },
+            function (u) { return 'https://thingproxy.freeboard.io/fetch/' + u; }
+        ];
+        async function yhPrice(symbol) {
+            const yurl = 'https://query1.finance.yahoo.com/v8/finance/chart/' + encodeURIComponent(symbol) + '?interval=1d&range=1d';
+            let lastErr = null;
+            for (let i = 0; i < CALC_PROXIES.length; i++) {
+                try {
+                    const resp = await fetch(CALC_PROXIES[i](yurl));
+                    if (!resp.ok) { lastErr = new Error('proxy ' + resp.status); continue; }
+                    const j = await resp.json();
+                    const meta = j && j.chart && j.chart.result && j.chart.result[0] && j.chart.result[0].meta;
+                    const pr = meta && (meta.regularMarketPrice || meta.previousClose);
+                    if (typeof pr === 'number') return pr;
+                    lastErr = new Error('sin precio');
+                } catch (e) { lastErr = e; }
+            }
+            throw (lastErr || new Error('sin datos'));
+        }
+        // Devuelve {spot, future, basis} probando primero /api (si existe) y luego los proxies.
+        async function calcFetchBasis(key) {
+            try {
+                const r = await fetch('/api/basis?asset=' + encodeURIComponent(key));
+                if (r.ok) {
+                    const d = await r.json();
+                    if (d && !d.error && typeof d.basis !== 'undefined') { d.via = 'api'; return d; }
+                }
+            } catch (e) { /* seguimos con los proxies */ }
+            const m = CALC_YH[key];
+            if (!m) throw new Error('activo sin fuente automatica');
+            const spot = await yhPrice(m.spot);
+            const fut = await yhPrice(m.fut);
+            return {
+                spot: Number(spot.toFixed(m.dec + 1)),
+                future: Number(fut.toFixed(m.dec + 1)),
+                basis: Number((fut - spot).toFixed(m.dec + 1)),
+                via: 'web'
+            };
+        }
+        // Trae el basis actual y lo aplica. Funciona en Vercel y tambien abriendo el archivo local.
+        async function calcUpdateBasis() {
+            const a = calcAsset();
+            const st = document.getElementById('calc-basis-status');
+            const btn = document.getElementById('calc-basis-update');
+            if (String(a.key).indexOf('custom-') === 0) {
+                st.style.color = '#fbbf24';
+                st.textContent = 'Los activos personalizados no tienen fuente automatica; ajusta el basis a mano.';
+                return;
+            }
+            btn.disabled = true;
+            st.style.color = '#94a3b8';
+            st.textContent = 'Consultando precios en linea...';
+            try {
+                const d = await calcFetchBasis(a.key);
+                const bi = document.getElementById('calc-basis');
+                bi.value = d.basis;
+                calcSaveBasis();
+                calcBasisHint();
+                calcCompute();
+                st.style.color = '#22e3a0';
+                st.textContent = 'Basis actualizado: ' + Number(d.basis).toFixed(a.futDec + 1) + '  (fut ' + d.future + ' menos spot ' + d.spot + ', ~15 min de retraso)';
+            } catch (e) {
+                st.style.color = '#f87171';
+                st.textContent = 'No se pudo actualizar (' + e.message + '). Reintenta en unos segundos.';
+            } finally {
+                btn.disabled = false;
+            }
+        }
+        function initCalc() {
+            calcLoad();
+            calcRenderAssets();
+            calcSyncUI();
+            ['calc-entry', 'calc-sl', 'calc-tp'].forEach(function (id) {
+                document.getElementById(id).addEventListener('input', calcCompute);
+            });
+            document.getElementById('calc-basis').addEventListener('input', function () { calcSaveBasis(); calcBasisHint(); calcCompute(); });
+            document.getElementById('calc-contracts').addEventListener('input', calcCompute);
+            document.getElementById('calc-asset').addEventListener('change', function (e) { calcSelectAsset(e.target.value); });
+            document.getElementById('calc-mode-a').addEventListener('click', function () { calcSetMode('A'); });
+            document.getElementById('calc-mode-b').addEventListener('click', function () { calcSetMode('B'); });
+            document.getElementById('calc-add').addEventListener('click', calcAddCustom);
+            document.getElementById('calc-basis-update').addEventListener('click', calcUpdateBasis);
+            document.getElementById('nav-calendar').addEventListener('click', function () { switchView('calendar'); });
+            document.getElementById('nav-calc').addEventListener('click', function () { switchView('calc'); });
+            calcCompute();
+        }
+
+        /* Alterna entre el calendario y la calculadora. */
+        function switchView(v) {
+            const isCalc = (v === 'calc');
+            document.getElementById('view-calendar').style.display = isCalc ? 'none' : '';
+            document.getElementById('view-calc').style.display = isCalc ? '' : 'none';
+            const resetBtn = document.querySelector('.btn-reset');
+            if (resetBtn && resetBtn.parentElement) resetBtn.parentElement.style.display = isCalc ? 'none' : '';
+            document.getElementById('nav-calendar').classList.toggle('active', !isCalc);
+            document.getElementById('nav-calc').classList.toggle('active', isCalc);
+            localStorage.setItem('phi_view', v);
+        }
+
+        window.onload = function () {
+            applyFirm();
+            refresh();
+            initSync();
+            initCalc();
+            switchView(localStorage.getItem('phi_view') || 'calendar');
+        };
+    </script>
+</body>
+</html>
