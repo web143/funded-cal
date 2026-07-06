@@ -376,6 +376,7 @@
         <div class="header-r">
             <div class="acct-switch" id="acct-switch"></div>
             <button class="acct-add" onclick="addAccount()" title="Nueva cuenta">+</button>
+            <button class="acct-add" onclick="changeAccountType()" title="Cambiar el tipo de la cuenta actual (Phidias / Blue Guardian)" style="width:auto; padding:0 10px; font-size:12px; font-weight:600;">⇄ Tipo</button>
             <button class="session-btn" id="session-btn" onclick="openSync()">
                 <span class="session-dot off" id="session-dot"></span>
                 <span id="session-label">Iniciar sesión</span>
@@ -404,7 +405,7 @@
             <div class="metric-sub" id="stat-balance">Balance: $5,000.00 · Target: $250</div>
         </div>
         <div class="metric">
-            <div class="metric-label">Balance Actual</div>
+            <div class="metric-label" id="lbl-consistency">Balance Actual</div>
             <div class="metric-val" id="stat-consistency">0.00%</div>
             <div class="metric-sub" id="stat-consistency-lbl">Limit: 15%</div>
         </div>
@@ -414,7 +415,7 @@
             <div class="metric-sub" id="stat-days-sub">Minimum required</div>
         </div>
         <div class="metric">
-            <div class="metric-label">Límite de Contratos</div>
+            <div class="metric-label" id="lbl-dll">Límite de Contratos</div>
             <div class="metric-val red" id="stat-dll">-$200.00</div>
             <div class="metric-sub" id="stat-dll-sub">4% · se reinicia cada día</div>
         </div>
@@ -611,10 +612,32 @@
         </button>
     </div>
 
-    <div class="footer">phidias e2l tracker</div>
+    <div class="footer">phidias e2l tracker · v3 (Phidias + Blue Guardian)</div>
 
     <script>
         const ACCOUNT_TYPES = {
+            ifs5k: {
+                typeId: 'ifs5k', typeLabel: 'BG $5,000 Starter', badge: '5K',
+                logo: 'BG', titleHTML: 'BLUE <span>GUARDIAN</span>',
+                sub: 'Consistency Tracker · $5,000 Instant Funding Starter',
+                accountSize: 5000, target: 250, consistencyLimit: 15, minDays: 5,
+                dailyLossPct: 3, dailyLossAmount: 150,
+                ddPct: 5, ddAmount: 250, ddTrailing: false, ddLabel: 'Max Loss',
+                shield: true,
+                planTargets: { 1: 35.00, 2: 35.00, 3: 35.00, 4: 35.00, 5: 35.00, 6: 35.00, 7: 35.00, 8: 5.00 },
+                ruleLabels: { clock: '2h Rule', shield: 'Shield' }
+            },
+            std25k: {
+                typeId: 'std25k', typeLabel: 'BG $25,000 Standard', badge: '25K',
+                logo: 'BG', titleHTML: 'BLUE <span>GUARDIAN</span>',
+                sub: 'Consistency Tracker · $25,000 Instant Funded Standard',
+                accountSize: 25000, target: 1500, consistencyLimit: 20, minDays: 5,
+                dailyLossPct: 3, dailyLossAmount: 750,
+                ddPct: 6, ddAmount: 1500, ddTrailing: true, ddLabel: 'Trailing Drawdown',
+                shield: false,
+                planTargets: {},
+                ruleLabels: { clock: '2h Rule', shield: 'Shield' }
+            },
             phidias25k: {
                 typeId: 'phidias25k', typeLabel: 'Phidias E2L $25,000', badge: 'E2L',
                 logo: 'PH', titleHTML: 'PHIDIAS <span>E2L</span>',
@@ -711,6 +734,8 @@
             document.getElementById('firm-logo').textContent = firm.logo;
             document.getElementById('firm-title').innerHTML = firm.titleHTML;
             document.getElementById('firm-sub').textContent = firm.sub;
+            document.getElementById('lbl-consistency').textContent = (firm.hasConsistency === false) ? 'Balance Actual' : 'Consistency Score';
+            document.getElementById('lbl-dll').textContent = (firm.hasDailyLoss === false) ? 'Límite de Contratos' : 'Daily Loss Limit';
             document.getElementById('lbl-clock').textContent = firm.ruleLabels.clock;
             document.getElementById('lbl-shield').textContent = firm.ruleLabels.shield;
             const shieldToggle = document.getElementById('modal-toggle-shield');
@@ -760,11 +785,29 @@
         function addAccount() {
             const name = (prompt('Nombre de la nueva cuenta:', 'Cuenta ' + (accounts.length + 1)) || '').trim();
             if (!name) return;
+            const choice = prompt('Tipo de cuenta — 1 = Phidias E2L $25,000 · 2 = Blue Guardian $5,000 Starter · 3 = Blue Guardian $25,000 Standard', '1');
+            if (choice === null) return;
+            const c = String(choice).trim();
+            const type = (c === '2') ? 'ifs5k' : (c === '3') ? 'std25k' : 'phidias25k';
             const id = 'acc-' + Date.now();
-            accounts.push({ id: id, name: name, type: 'phidias25k' });
+            accounts.push({ id: id, name: name, type: type });
             persistAccounts();
             currentAccountId = id;
             localStorage.setItem('bg_current_account', id);
+            applyFirm();
+            refresh();
+            pushSync();
+        }
+
+        function changeAccountType() {
+            const acc = accounts.find(function (a) { return a.id === currentAccountId; });
+            if (!acc) return;
+            const cur = (ACCOUNT_TYPES[acc.type] && ACCOUNT_TYPES[acc.type].typeLabel) || acc.type;
+            const choice = prompt('Tipo para "' + acc.name + '" (actual: ' + cur + ') — 1 = Phidias E2L $25,000 · 2 = Blue Guardian $5,000 Starter · 3 = Blue Guardian $25,000 Standard', '1');
+            if (choice === null) return;
+            const c = String(choice).trim();
+            acc.type = (c === '2') ? 'ifs5k' : (c === '3') ? 'std25k' : 'phidias25k';
+            persistAccounts();
             applyFirm();
             refresh();
             pushSync();
